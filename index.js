@@ -19,10 +19,24 @@ async function run() {
     await client.connect();
 
     const carShop = client.db("Car_Shop").collection("Parts");
+    const userCollection = client.db("Car_Shop").collection("user");
 
     // all parts
     app.get('/parts',async(req,res)=>{
       const result = await carShop.find().toArray()
+      res.send(result)
+    })
+
+    // storage user
+    app.put("/users/:email",async (req,res)=>{
+      const email = req.params.user;
+      const user = req.body
+      const filter = {email : email}
+      const option = {upsert:true}
+      const updateDoc = {
+        $set:user
+      }
+      const result = await userCollection.updateOne(filter,updateDoc,option)
       res.send(result)
     })
 
