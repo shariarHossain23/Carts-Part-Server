@@ -36,7 +36,14 @@ async function run() {
     const carShopUser = client.db("Car_Shop").collection("user");
     const carShopOrder = client.db("Car_Shop").collection("order");
 
-    // 
+    // get order for specific person
+    app.get('/orders/:email',verifyJwt,async(req,res)=>{
+      const email = req.params.email;
+      const filter = {email:email};
+      const query = carShopOrder.find(filter);
+      const result = await query.toArray();
+      res.send(result)
+    })
     // order get api
     app.post('/orders',async(req,res)=>{
       const order = req.body;
