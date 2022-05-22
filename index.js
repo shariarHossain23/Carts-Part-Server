@@ -19,8 +19,17 @@ async function run() {
     await client.connect();
 
     const carShop = client.db("Car_Shop").collection("Parts");
-    const userCollection = client.db("Car_Shop").collection("user");
+    const carShopUser = client.db("Car_Shop").collection("user");
+    const carShopOrder = client.db("Car_Shop").collection("order");
 
+
+    // order api
+    app.post('/orders',async(req,res)=>{
+      const order = req.body;
+      console.log(order);
+      const result = await carShopOrder.insertOne(order)
+      res.send(result)
+    })
     // all parts
     app.get('/parts',async(req,res)=>{
       const result = await carShop.find().toArray()
@@ -45,7 +54,7 @@ async function run() {
       const updateDoc = {
         $set:user
       }
-      const result = await userCollection.updateOne(filter,updateDoc,option)
+      const result = await carShopUser.updateOne(filter,updateDoc,option)
       const token = jwt.sign({email:email},process.env.JSON_KEY,{
          expiresIn: '1d' 
       })
