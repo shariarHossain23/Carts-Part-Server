@@ -14,6 +14,20 @@ app.use(express.json())
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.52sp4.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
+function verifyJwt(req,res,next){
+  const authHeader = req.headers.authorization
+  if(!authHeader){
+    res.status(401).send({message:"unAuthorized access"})
+  }
+  const token = authHeader.split(" ")[1]
+  jwt.verify(token,process.env.JSON_KEY,(err,decoded)=>{
+    if(err){
+      res.status(403).send({message:"forbidden access"})
+    }
+    req.decoded = decoded;
+    next()
+  })
+}
 async function run() {
   try {
     await client.connect();
@@ -22,11 +36,10 @@ async function run() {
     const carShopUser = client.db("Car_Shop").collection("user");
     const carShopOrder = client.db("Car_Shop").collection("order");
 
-
-    // order api
+    // 
+    // order get api
     app.post('/orders',async(req,res)=>{
       const order = req.body;
-      console.log(order);
       const result = await carShopOrder.insertOne(order)
       res.send(result)
     })
