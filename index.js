@@ -17,16 +17,17 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 function verifyJwt(req,res,next){
   const authHeader = req.headers.authorization
   if(!authHeader){
-    res.status(401).send({message:"unAuthorized access"})
+    return res.status(401).send({message:"unAuthorized access"})
   }
   const token = authHeader.split(" ")[1]
-  jwt.verify(token,process.env.JSON_KEY,(err,decoded)=>{
-    if(err){
-      res.status(403).send({message:"forbidden access"})
+  jwt.verify(token,process.env.JSON_KEY,(error,decoded)=>{
+    if(error){
+      return res.status(403).send({message:"forbidden access"})
     }
     req.decoded = decoded;
     next()
   })
+
 }
 async function run() {
   try {
@@ -36,6 +37,14 @@ async function run() {
     const carShopUser = client.db("Car_Shop").collection("user");
     const carShopOrder = client.db("Car_Shop").collection("order");
 
+
+    // payment for booking
+    app.get('/payment/:id',verifyJwt,async(req,res)=>{
+      const id = req.params.id;
+      const filter = {_id:ObjectId(id)}
+      const result = await carShopOrder.findOne(filter);
+      res.send(result)
+    })
     // get order for specific person
     app.get('/orders/:email',verifyJwt,async(req,res)=>{
       const email = req.params.email;
