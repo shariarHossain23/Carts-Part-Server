@@ -42,29 +42,41 @@ async function run() {
     const carShopPayment = client.db("Car_Shop").collection("paid");
     const carShopReview = client.db("Car_Shop").collection("review");
 
-
-    
-    app.put("/users/:email",verifyJwt,async(req,res)=>{
+    // get user information
+    app.get("/users/:email", verifyJwt, async (req, res) => {
+      const decoded = req.decoded.email;
+      const email = req.params.email;
+      if (decoded === email) {
+        const filter = { email: email };
+        const query = await carShopUser.findOne(filter);
+        res.send(query);
+      }
+      else{
+        return res.status(403).send({ message: "forbidden access" });
+      }
+    });
+    // user information
+    app.put("/users/:email", verifyJwt, async (req, res) => {
       const email = req.params.email;
       const updateUser = req.body;
-      const filter = {email:email}
-      const options = {upsert:true}
-      const updatedDoc={
-        $set:updateUser
-      }
-      const result = await carShopUser.updateOne(filter,updatedDoc,options)
-      res.send(result)
-    })
-      // get review
-      app.get('/reviews',async(req,res)=>{
-        const result = (await carShopReview.find().toArray()).reverse()
-        res.send(result)
-      })
+      const filter = { email: email };
+      const options = { upsert: true };
+      const updatedDoc = {
+        $set: updateUser,
+      };
+      const result = await carShopUser.updateOne(filter, updatedDoc, options);
+      res.send(result);
+    });
+    // get review
+    app.get("/reviews", async (req, res) => {
+      const result = (await carShopReview.find().toArray()).reverse();
+      res.send(result);
+    });
     // post review
-    app.post("/reviews", verifyJwt,async (req, res) => {
+    app.post("/reviews", verifyJwt, async (req, res) => {
       const review = req.body;
       const result = await carShopReview.insertOne(review);
-      res.send(result)
+      res.send(result);
     });
     // payment api
     app.post("/create-payment-intent", verifyJwt, async (req, res) => {
@@ -122,6 +134,9 @@ async function run() {
         const query = carShopOrder.find(filter);
         const result = await query.toArray();
         res.send(result);
+      }
+      else{
+        return res.status(403).send({ message: "forbidden access" });
       }
     });
     // order get api
