@@ -44,8 +44,20 @@ async function run() {
 
 
 
+    // make admin api
+    app.put('/user/admin/:email',verifyJwt,async(req,res) =>{
+      const email = req.params.email;
+      const filter ={email:email};
+      const updatedDoc ={
+        $set:{
+          role:"admin"
+        }
+      }
+      const result = await carShopUser.updateOne(filter,updatedDoc);
+      res.send(result)
+    })
     // all user 
-    app.get('/all-user',async(req,res)=>{
+    app.get('/all-user',verifyJwt,async(req,res)=>{
       const result = await carShopUser.find().toArray()
       res.send(result)
     })
