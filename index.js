@@ -42,6 +42,24 @@ async function run() {
     const carShopPayment = client.db("Car_Shop").collection("paid");
     const carShopReview = client.db("Car_Shop").collection("review");
 
+
+    
+    app.put("/users/:email",verifyJwt,async(req,res)=>{
+      const email = req.params.email;
+      const updateUser = req.body;
+      const filter = {email:email}
+      const options = {upsert:true}
+      const updatedDoc={
+        $set:updateUser
+      }
+      const result = await carShopUser.updateOne(filter,updatedDoc,options)
+      res.send(result)
+    })
+      // get review
+      app.get('/reviews',async(req,res)=>{
+        const result = (await carShopReview.find().toArray()).reverse()
+        res.send(result)
+      })
     // post review
     app.post("/reviews", verifyJwt,async (req, res) => {
       const review = req.body;
