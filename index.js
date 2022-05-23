@@ -37,29 +37,57 @@ async function run() {
     const carShop = client.db("Car_Shop").collection("Parts");
     const carShopUser = client.db("Car_Shop").collection("user");
     const carShopOrder = client.db("Car_Shop").collection("order");
+    const carShopPayment = client.db("Car_Shop").collection("paid");
+
+
+    
 
     // payment api
-    app.post("/create-payment-intent", verifyJwt,async (req, res) => {
-      const { price } = req.body;
-      const amount = price * 100;
-    
-      // Create a PaymentIntent with the order amount and currency
+    app.post("/create-payment-intent",verifyJwt,async (req, res) => {
+      const service = req.body;
+      const price = service.price;
+     if(price){
+      const amount = price*100;
       const paymentIntent = await stripe.paymentIntents.create({
         amount:amount,
         currency: "usd",
-        "payment_method_types": ["card"]
+        payment_method_types: ["card"]
       
       });
     
       res.send({
         clientSecret: paymentIntent.client_secret,
       });
+     }
     });
+   
     // payment for booking
     app.get('/payment/:id',verifyJwt,async(req,res)=>{
       const id = req.params.id;
       const filter = {_id:ObjectId(id)}
       const result = await carShopOrder.findOne(filter);
+      res.send(result)
+    })
+    // update order
+    app.patch('/orders/:id',verifyJwt,async(req,res)=>{
+      const id = req.params.id;
+      const filter = {_id:ObjectId(id)}
+      const payment = req.body;
+      const updatedDoc ={
+        $set:{
+          paid:true,
+          transactionId:payment.transactionId
+        }
+      }
+      const paid = await carShopPayment.insertOne(payment)
+      const result = await carShopOrder.updateOne(filter,updatedDoc)
+      res.send({result,paid})
+    })
+     // order cancel api
+     app.delete('/orders/:id',async(req,res)=>{
+      const id = req.params.id;
+      const filter = {_id:ObjectId(id)};
+      const result = await carShopOrder.deleteOne(filter)
       res.send(result)
     })
     // get order for specific person
@@ -85,7 +113,6 @@ async function run() {
     // get specific user
     app.get('/parts/:id',async(req,res)=>{
       const id = req.params.id;
-      console.log(id);
       const filter = {_id:ObjectId(id)};
       const result = await carShop.findOne(filter);
       res.send(result)
