@@ -42,10 +42,20 @@ async function run() {
     const carShopPayment = client.db("Car_Shop").collection("paid");
     const carShopReview = client.db("Car_Shop").collection("review");
 
-
+    const verifyAdmin = async (req,res,next) =>{
+      const decoded = req.decoded.email;
+      const filter = {email:decoded}
+      const admin = await carShopUser.findOne(filter)
+      if(admin.role === "admin"){
+        next()
+      }
+      else{
+        return res.status(403).send({ message: "forbidden access" });
+      }
+    }
 
     // make admin api
-    app.put('/user/admin/:email',verifyJwt,async(req,res) =>{
+    app.put('/user/admin/:email',verifyJwt,verifyAdmin,async(req,res) =>{
       const email = req.params.email;
       const filter ={email:email};
       const updatedDoc ={
