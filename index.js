@@ -42,6 +42,8 @@ async function run() {
     const carShopPayment = client.db("Car_Shop").collection("paid");
     const carShopReview = client.db("Car_Shop").collection("review");
 
+
+    
     // get user information
     app.get("/users/:email", verifyJwt, async (req, res) => {
       const decoded = req.decoded.email;
@@ -55,8 +57,8 @@ async function run() {
         return res.status(403).send({ message: "forbidden access" });
       }
     });
-    // user information
-    app.put("/users/:email", verifyJwt, async (req, res) => {
+    // user information update
+    app.patch("/users/:email",verifyJwt, async (req, res) => {
       const email = req.params.email;
       const updateUser = req.body;
       const filter = { email: email };
@@ -172,7 +174,7 @@ async function run() {
       const token = jwt.sign({ email: email }, process.env.JSON_KEY, {
         expiresIn: "1d",
       });
-      res.send({ result, token });
+      res.send({ result, token,message:"hello" });
     });
   } finally {
   }
