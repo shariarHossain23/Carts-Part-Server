@@ -43,6 +43,12 @@ async function run() {
     const carShopReview = client.db("Car_Shop").collection("review");
 
 
+
+    // all user 
+    app.get('/all-user',async(req,res)=>{
+      const result = await carShopUser.find().toArray()
+      res.send(result)
+    })
     
     // get user information
     app.get("/users/:email", verifyJwt, async (req, res) => {
