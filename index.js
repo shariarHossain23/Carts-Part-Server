@@ -54,6 +54,13 @@ async function run() {
       }
     }
 
+    // secure admin page 
+    app.get('/admin/:email',async(req,res)=>{
+      const email = req.params.email;
+      const admin = await carShopUser.find({email:email})
+      const isAdmin = admin.role === "admin"
+      res.send(isAdmin)
+    })
     // make admin api
     app.put('/user/admin/:email',verifyJwt,verifyAdmin,async(req,res) =>{
       const email = req.params.email;
