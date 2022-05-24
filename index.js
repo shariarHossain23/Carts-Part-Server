@@ -54,7 +54,26 @@ async function run() {
       }
     }
 
+    // delete single orders api 
+    app.delete("/all-orders/:id",async(req,res)=>{
+      const id =req.params.id;
+      const filter ={_id:ObjectId(id)}
+      const result = await carShopOrder.deleteOne(filter)
+      res.send(result)
+    })
+    // updated status all orders api
+    app.put("/all-orders/:id",verifyJwt,verifyAdmin,async(req,res)=>{
+      const id = req.params.id;
+      const filter={_id:ObjectId(id)}
+      const updatedDoc={
+        $set:{
+          status:true
+        }
+      }
+      const result = await carShopOrder.updateOne(filter,updatedDoc);
+      res.send(result)
 
+    })
     // all order api
     app.get("/all-orders",verifyJwt,verifyAdmin,async(req,res)=>{
       const result = await carShopOrder.find().toArray();
