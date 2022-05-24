@@ -257,7 +257,6 @@ async function run() {
     app.patch('/parts/:id',verifyJwt,async(req,res)=>{
       const id = req.params.id;
       const Available = req.body.newAvailable;
-      console.log(Available);
       const filter = {_id:ObjectId(id)};
       const updatedDoc={
         $set:{
