@@ -54,9 +54,21 @@ async function run() {
       }
     }
 
+
+    // update quantity 
+    app.put('/all-products/:id',verifyJwt,verifyAdmin,async(req,res)=>{
+      const id = req.params.id;
+      const available = req.body;
+      const filter = {_id:ObjectId(id)};
+      const updatedDoc={
+        $set:available
+      }
+      const result = await carShop.updateOne(filter,updatedDoc);
+      res.send(result)
+    })
     // get parts api
 
-    app.get("/parts",verifyJwt,verifyAdmin,async(req,res)=>{
+    app.get("/all-products",verifyJwt,verifyAdmin,async(req,res)=>{
       const result = await carShop.find().toArray();
       res.send(result)
     })
