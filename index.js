@@ -55,7 +55,17 @@ async function run() {
     }
 
 
-    // update quantity 
+    // delete api all product
+    
+    app.delete("/all-products/:id",verifyJwt,verifyAdmin,async (req,res)=>{
+      const id = req.params.id
+      const filter = {_id:ObjectId(id)}
+      const result = await carShop.deleteOne(filter)
+      res.send(result)
+    })
+
+
+    // update quantity  all product
     app.put('/all-products/:id',verifyJwt,verifyAdmin,async(req,res)=>{
       const id = req.params.id;
       const available = req.body;
