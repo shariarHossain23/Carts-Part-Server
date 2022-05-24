@@ -131,6 +131,18 @@ async function run() {
       const result = await carShopUser.updateOne(filter,updatedDoc);
       res.send(result)
     })
+    // remove admin 
+    app.patch('/user/admin/:email',verifyJwt,verifyAdmin,async(req,res) =>{
+      const email = req.params.email;
+      const filter ={email:email};
+      const updatedDoc ={
+        $set:{
+          role:""
+        }
+      }
+      const result = await carShopUser.updateOne(filter,updatedDoc);
+      res.send(result)
+    })
     // all user 
     app.get('/all-user',verifyJwt,async(req,res)=>{
       const result = await carShopUser.find().toArray()
