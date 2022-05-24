@@ -55,6 +55,11 @@ async function run() {
     }
 
 
+    // all order api
+    app.get("/all-orders",verifyJwt,verifyAdmin,async(req,res)=>{
+      const result = await carShopOrder.find().toArray();
+      res.send(result)
+    })
     // delete api all product
     
     app.delete("/all-products/:id",verifyJwt,verifyAdmin,async (req,res)=>{
