@@ -252,21 +252,7 @@ async function run() {
       const result = await carShopOrder.insertOne(order);
       res.send(result);
     });
-    // patch order 
-
-    app.patch('/parts/:id',verifyJwt,async(req,res)=>{
-      const id = req.params.id;
-      const Available = req.body.newAvailable;
-      const filter = {_id:ObjectId(id)};
-      const updatedDoc={
-        $set:{
-          Available:Available
-        }
-      
-      }
-      const result = await carShop.updateOne(filter,updatedDoc);
-      res.send(result)
-    })
+    
     // all parts
     app.get("/parts", async (req, res) => {
       const result = await carShop.find().toArray();
