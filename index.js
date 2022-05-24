@@ -54,10 +54,22 @@ async function run() {
       }
     }
 
-    // secure admin page 
-    app.get('/admin/:email',async(req,res)=>{
+    // get parts api
+
+    app.get("/parts",verifyJwt,verifyAdmin,async(req,res)=>{
+      const result = await carShop.find().toArray();
+      res.send(result)
+    })
+   // post parts api 
+   app.post("/parts",verifyJwt,verifyAdmin,async(req,res)=>{
+     const service = req.body;
+     const result = await carShop.insertOne(service);
+     res.send(result)
+   })  
+    // secure admin page  ,,
+    app.get('/admin/:email',verifyJwt,async(req,res)=>{
       const email = req.params.email;
-      const admin = await carShopUser.find({email:email})
+      const admin = await carShopUser.findOne({email:email})
       const isAdmin = admin.role === "admin"
       res.send(isAdmin)
     })
