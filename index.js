@@ -7,10 +7,10 @@ const jwt = require("jsonwebtoken");
 const port = process.env.PORT || 5000;
 const stripe = require("stripe")(process.env.STRIPE_KEY);
 
-// middleware
+// middleware 
 app.use(cors());
 app.use(express.json());
-
+ 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.52sp4.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
@@ -285,8 +285,11 @@ async function run() {
   } finally {
   }
 }
-run().catch(console.dir);
 
+run().catch(console.dir);
+app.get("/home",(req,res)=>{
+  res.send("hello")
+})
 app.get("/", (req, res) => {
   res.send("assignment 12");
 });
